@@ -2,6 +2,19 @@
 
 > 修改自 [tickstep/aliyunpan](https://github.com/tickstep/aliyunpan)
 
+## 📋 编译环境要求
+
+- **Go 1.22+**
+
+```bash
+# 检查Go版本
+go version
+
+# 如未安装，访问: https://zhuanlan.zhihu.com/p/1969933134599524792
+```
+
+---
+
 ## 🐛 问题原因
 
 阿里云盘API升级到 **OSS V4签名**，URL格式从绝对时间戳改为相对秒数：

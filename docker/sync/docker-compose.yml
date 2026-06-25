@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  sync:
+    image: tickstep/aliyunpan-sync:v0.1.6
+    container_name: aliyunpan-sync
+    restart: always
+    volumes:
+      # （必须）映射的本地目录
+      - ./data:/home/app/data:rw
+      # （可选）可以指定JS插件sync_handler.js用于过滤文件，详见插件说明
+      #- ./plugin/js/sync_handler.js:/home/app/config/plugin/js/sync_handler.js
+      # （推荐）挂载sync_drive同步数据库到本地，这样即使容器销毁，同步数据库还可以用于以后使用
+      #- ./sync_drive:/home/app/config/sync_drive
+      # （必须）映射token凭据文件
+      - /your/file/path/for/aliyunpan_config.json:/home/app/config/aliyunpan_config.json
+    environment:
+      # 时区，东8区
+      - TZ=Asia/Shanghai
+      # 下载文件并发数
+      - ALIYUNPAN_DOWNLOAD_PARALLEL=2
+      # 上传文件并发数
+      - ALIYUNPAN_UPLOAD_PARALLEL=2
+      # 下载数据块大小，单位为KB，默认为10240KB，建议范围1024KB~10240KB
+      - ALIYUNPAN_DOWNLOAD_BLOCK_SIZE=1024
+      # 上传数据块大小，单位为KB，默认为10240KB，建议范围1024KB~10240KB
+      - ALIYUNPAN_UPLOAD_BLOCK_SIZE=10240
+      # 指定网盘文件夹作为备份目标目录，不要指定根目录
+      - ALIYUNPAN_PAN_DIR=/my_sync_dir
+      # 备份模式：upload(备份本地文件到云盘), download(备份云盘文件到本地)
+      - ALIYUNPAN_SYNC_MODE=upload
+      # 备份策略: exclusive(排他备份文件，目标目录多余的文件会被删除),increment(增量备份文件，目标目录多余的文件不会被删除)
+      - ALIYUNPAN_SYNC_POLICY=increment
+      # 备份周期, 支持两种: infinity(永久循环备份),onetime(只运行一次备份)
+      - ALIYUNPAN_SYNC_CYCLE=infinity
+      # 网盘：backup(备份盘), resource(资源盘)
+      - ALIYUNPAN_SYNC_DRIVE=backup
+      # 是否显示文件备份过程日志，true-显示，false-不显示
+      - ALIYUNPAN_SYNC_LOG=true
+      # 本地文件修改检测延迟间隔，单位秒。如果本地文件会被频繁修改，例如录制视频文件，配置好该时间可以避免上传未录制好的文件
+      - ALIYUNPAN_LOCAL_DELAY_TIME=3
+      # 扫描文件间隔时间，单位：分钟
+      - ALIYUNPAN_SCAN_INTERVAL_TIME=1
